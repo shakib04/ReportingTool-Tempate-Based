@@ -77,11 +77,55 @@ namespace ReportingTool
                 return;
             }
 
-            lblStatus.Text = "Ready to generate reports...";
+            try
+            {
+                lblStatus.Text = "Reading Excel...";
 
-            MessageBox.Show(
-                "All files selected successfully!\n\nNext step: Excel → Word generation."
-            );
+                var excelService = new ExcelService();
+
+                List<ReportData> reports =
+                    excelService.ReadExcel(excelFilePath);
+
+                if (reports.Count == 0)
+                {
+                    MessageBox.Show("No data found in Excel.");
+                    return;
+                }
+
+                lblStatus.Text = "Generating Word document...";
+
+                var firstEmployee = reports[0];
+
+                string outputFilePath = Path.Combine(
+                    outputFolderPath,
+                    $"Report_{firstEmployee.EmployeeId}.docx"
+                );
+
+                var wordService = new WordService();
+
+                wordService.GenerateReport(
+                    templateFilePath,
+                    outputFilePath,
+                    firstEmployee
+                );
+
+                lblStatus.Text = "Report generated successfully!";
+
+                MessageBox.Show(
+                    $"Report generated successfully!\n\n{outputFilePath}"
+                );
+            }
+            catch (Exception ex)
+            {
+                lblStatus.Text = "Error occurred.";
+
+                MessageBox.Show(
+                    ex.Message,
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
         }
     }
 
