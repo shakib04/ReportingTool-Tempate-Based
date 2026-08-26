@@ -33,6 +33,9 @@
             btnSelectTemplate = new Button();
             btnSelectOutput = new Button();
             btnGenerate = new Button();
+            btnSettings = new Button();
+            label1 = new Label();
+            txtExcelPath = new TextBox();
             SuspendLayout();
             // 
             // lblStatus
@@ -47,11 +50,11 @@
             // 
             // btnSelectExcel
             // 
-            btnSelectExcel.Location = new Point(118, 72);
+            btnSelectExcel.Location = new Point(356, 62);
             btnSelectExcel.Name = "btnSelectExcel";
-            btnSelectExcel.Size = new Size(330, 46);
+            btnSelectExcel.Size = new Size(112, 24);
             btnSelectExcel.TabIndex = 1;
-            btnSelectExcel.Text = "[ Select Excel ]";
+            btnSelectExcel.Text = "[ Browse ]";
             btnSelectExcel.UseVisualStyleBackColor = true;
             btnSelectExcel.Click += btnSelectExcel_Click;
             // 
@@ -85,17 +88,47 @@
             btnGenerate.UseVisualStyleBackColor = true;
             btnGenerate.Click += btnGenerate_Click;
             // 
-            // Form1
+            // btnSettings
+            // 
+            btnSettings.Location = new Point(454, 12);
+            btnSettings.Name = "btnSettings";
+            btnSettings.Size = new Size(74, 26);
+            btnSettings.TabIndex = 5;
+            btnSettings.Text = "Settings";
+            btnSettings.UseVisualStyleBackColor = true;
+            btnSettings.Click += btnSettings_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.BorderStyle = BorderStyle.FixedSingle;
+            label1.Location = new Point(118, 38);
+            label1.Name = "label1";
+            label1.Size = new Size(41, 17);
+            label1.TabIndex = 6;
+            label1.Text = "Ready";
+            // 
+            // txtExcelPath
+            // 
+            txtExcelPath.Location = new Point(118, 64);
+            txtExcelPath.Name = "txtExcelPath";
+            txtExcelPath.Size = new Size(219, 23);
+            txtExcelPath.TabIndex = 7;
+            // 
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(txtExcelPath);
+            Controls.Add(label1);
+            Controls.Add(btnSettings);
             Controls.Add(btnGenerate);
             Controls.Add(btnSelectOutput);
             Controls.Add(btnSelectTemplate);
             Controls.Add(btnSelectExcel);
             Controls.Add(lblStatus);
-            Name = "Form1";
+            Name = "MainForm";
             Text = "Reporting Tool";
             ResumeLayout(false);
             PerformLayout();
@@ -108,5 +141,8 @@
         private Button btnSelectTemplate;
         private Button btnSelectOutput;
         private Button btnGenerate;
+        private Button btnSettings;
+        private Label label1;
+        private TextBox txtExcelPath;
     }
 }

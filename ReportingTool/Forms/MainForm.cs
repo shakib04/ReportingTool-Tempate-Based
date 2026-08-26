@@ -1,3 +1,4 @@
+using ReportingTool.Forms;
 using ReportingTool.Services;
 
 namespace ReportingTool;
@@ -11,6 +12,7 @@ public partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
+        LoadDefaultSettings();
     }
 
     private void btnSelectExcel_Click(object sender, EventArgs e)
@@ -130,5 +132,40 @@ public partial class MainForm : Form
         }
 
         return true;
+    }
+
+    private void btnSettings_Click(
+    object sender,
+    EventArgs e)
+    {
+        using var settingsForm = new SettingsForm();
+
+        if (settingsForm.ShowDialog() == DialogResult.OK)
+        {
+            LoadDefaultSettings();
+        }
+    }
+
+    private void LoadDefaultSettings()
+    {
+        var settingsService =
+            new SettingsService();
+
+        var settings =
+            settingsService.Load();
+
+        if (!string.IsNullOrWhiteSpace(
+            settings.DefaultTemplatePath))
+        {
+            templateFilePath =
+                settings.DefaultTemplatePath;
+        }
+
+        if (!string.IsNullOrWhiteSpace(
+            settings.DefaultOutputFolder))
+        {
+            outputFolderPath =
+                settings.DefaultOutputFolder;
+        }
     }
 }
