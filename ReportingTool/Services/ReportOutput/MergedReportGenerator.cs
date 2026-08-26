@@ -32,7 +32,7 @@ public class MergedReportGenerator : IReportOutputStrategy
             templateFilePath,
             outputFilePath,
             reports
-        );
+        ); 
 
         return reports.Count;
     }
