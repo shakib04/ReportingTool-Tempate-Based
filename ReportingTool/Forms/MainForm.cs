@@ -98,10 +98,10 @@ public partial class MainForm : Form
                 );
 
             lblStatus.Text =
-                $"{generatedCount} reports generated!";
+                $"Reports generated using total records {generatedCount}!";
 
             MessageBox.Show(
-                $"{generatedCount} reports generated successfully!",
+                $"Reports generated using total records {generatedCount}!",
                 "Success",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
