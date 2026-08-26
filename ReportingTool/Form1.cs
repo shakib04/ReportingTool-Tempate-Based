@@ -1,142 +1,134 @@
 using ReportingTool.Services;
-using ReportingTool.Models;
 
-namespace ReportingTool
+namespace ReportingTool;
+
+public partial class Form1 : Form
 {
-    public partial class Form1 : Form
+    private string? excelFilePath;
+    private string? templateFilePath;
+    private string? outputFolderPath;
+
+    public Form1()
     {
-        private string? excelFilePath;
-        private string? templateFilePath;
-        private string? outputFolderPath;
+        InitializeComponent();
+    }
 
-        public Form1()
+    private void btnSelectExcel_Click(object sender, EventArgs e)
+    {
+        using OpenFileDialog dialog = new();
+
+        dialog.Filter = "Excel Files (*.xlsx)|*.xlsx";
+
+        if (dialog.ShowDialog() == DialogResult.OK)
         {
-            InitializeComponent();
-        }
+            excelFilePath = dialog.FileName;
 
-        private void btnSelectExcel_Click(object sender, EventArgs e)
-        {
-            using OpenFileDialog dialog = new();
-
-            dialog.Filter = "Excel Files (*.xlsx)|*.xlsx";
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                excelFilePath = dialog.FileName;
-
-                lblStatus.Text =
-                    $"Excel selected: {Path.GetFileName(excelFilePath)}";
-            }
-        }
-
-        private void btnSelectTemplate_Click(object sender, EventArgs e)
-        {
-            using OpenFileDialog dialog = new();
-
-            dialog.Filter = "Word Files (*.docx)|*.docx";
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                templateFilePath = dialog.FileName;
-
-                lblStatus.Text =
-                    $"Template selected: {Path.GetFileName(templateFilePath)}";
-            }
-        }
-
-        private void btnSelectOutput_Click(object sender, EventArgs e)
-        {
-            using FolderBrowserDialog dialog = new();
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                outputFolderPath = dialog.SelectedPath;
-
-                lblStatus.Text =
-                    $"Output folder: {outputFolderPath}";
-            }
-        }
-
-        private void btnGenerate_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(excelFilePath))
-            {
-                MessageBox.Show("Please select an Excel file.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(templateFilePath))
-            {
-                MessageBox.Show("Please select a Word template.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(outputFolderPath))
-            {
-                MessageBox.Show("Please select an output folder.");
-                return;
-            }
-
-            try
-            {
-                lblStatus.Text = "Reading Excel...";
-
-                var excelService = new ExcelService();
-
-                List<ReportData> reports =
-                    excelService.ReadExcel(excelFilePath);
-
-                if (reports.Count == 0)
-                {
-                    MessageBox.Show("No data found in Excel.");
-                    return;
-                }
-
-                lblStatus.Text = "Generating Word document...";
-
-                var firstEmployee = reports[0];
-
-                string outputFilePath = Path.Combine(
-                    outputFolderPath,
-                    $"Report_{firstEmployee.EmployeeId}.docx"
-                );
-
-                var wordService = new WordService();
-
-                wordService.GenerateReport(
-                    templateFilePath,
-                    outputFilePath,
-                    firstEmployee
-                );
-
-                lblStatus.Text = "Report generated successfully!";
-
-                MessageBox.Show(
-                    $"Report generated successfully!\n\n{outputFilePath}"
-                );
-            }
-            catch (Exception ex)
-            {
-                lblStatus.Text = "Error occurred.";
-
-                MessageBox.Show(
-                    ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
+            lblStatus.Text =
+                $"Excel: {Path.GetFileName(excelFilePath)}";
         }
     }
 
-    namespace ReportingTool.Models
+    private void btnSelectTemplate_Click(
+        object sender,
+        EventArgs e)
     {
-        public class Employee
+        using OpenFileDialog dialog = new();
+
+        dialog.Filter = "Word Files (*.docx)|*.docx";
+
+        if (dialog.ShowDialog() == DialogResult.OK)
         {
-            public string Name { get; set; } = string.Empty;
-            public string Designation { get; set; } = string.Empty;
-            public string EmployeeId { get; set; } = string.Empty;
-            public string RetirementDate { get; set; } = string.Empty;
+            templateFilePath = dialog.FileName;
+
+            lblStatus.Text =
+                $"Template: {Path.GetFileName(templateFilePath)}";
         }
+    }
+
+    private void btnSelectOutput_Click(
+        object sender,
+        EventArgs e)
+    {
+        using FolderBrowserDialog dialog = new();
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            outputFolderPath = dialog.SelectedPath;
+
+            lblStatus.Text =
+                $"Output folder selected.";
+        }
+    }
+
+    private void btnGenerate_Click(
+        object sender,
+        EventArgs e)
+    {
+        if (!ValidateInputs())
+        {
+            return;
+        }
+
+        try
+        {
+            lblStatus.Text = "Generating reports...";
+
+            var generatorService =
+                new ReportGeneratorService(
+                    new ExcelService(),
+                    new WordService()
+                );
+
+            int generatedCount =
+                generatorService.GenerateReports(
+                    excelFilePath!,
+                    templateFilePath!,
+                    outputFolderPath!
+                );
+
+            lblStatus.Text =
+                $"{generatedCount} reports generated!";
+
+            MessageBox.Show(
+                $"{generatedCount} reports generated successfully!",
+                "Success",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
+        catch (Exception ex)
+        {
+            lblStatus.Text = "Error occurred.";
+
+            MessageBox.Show(
+                ex.Message,
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+        }
+    }
+
+    private bool ValidateInputs()
+    {
+        if (string.IsNullOrWhiteSpace(excelFilePath))
+        {
+            MessageBox.Show("Please select an Excel file.");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(templateFilePath))
+        {
+            MessageBox.Show("Please select a Word template.");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(outputFolderPath))
+        {
+            MessageBox.Show("Please select an output folder.");
+            return false;
+        }
+
+        return true;
     }
 }
