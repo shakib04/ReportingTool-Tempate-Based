@@ -2,13 +2,13 @@ using ReportingTool.Services;
 
 namespace ReportingTool;
 
-public partial class Form1 : Form
+public partial class MainForm : Form
 {
     private string? excelFilePath;
     private string? templateFilePath;
     private string? outputFolderPath;
 
-    public Form1()
+    public MainForm()
     {
         InitializeComponent();
     }
