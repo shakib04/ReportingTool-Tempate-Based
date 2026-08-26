@@ -24,6 +24,7 @@ public partial class MainForm : Form
         if (dialog.ShowDialog() == DialogResult.OK)
         {
             excelFilePath = dialog.FileName;
+            txtExcelPath.Text = excelFilePath;
 
             lblStatus.Text =
                 $"Excel: {Path.GetFileName(excelFilePath)}";
@@ -41,6 +42,7 @@ public partial class MainForm : Form
         if (dialog.ShowDialog() == DialogResult.OK)
         {
             templateFilePath = dialog.FileName;
+            txtTemplatePath.Text = templateFilePath;
 
             lblStatus.Text =
                 $"Template: {Path.GetFileName(templateFilePath)}";
@@ -56,6 +58,7 @@ public partial class MainForm : Form
         if (dialog.ShowDialog() == DialogResult.OK)
         {
             outputFolderPath = dialog.SelectedPath;
+            txtOutputPath.Text = outputFolderPath;
 
             lblStatus.Text =
                 $"Output folder selected.";
@@ -148,24 +151,29 @@ public partial class MainForm : Form
 
     private void LoadDefaultSettings()
     {
-        var settingsService =
-            new SettingsService();
+        var settingsService = new SettingsService();
 
-        var settings =
-            settingsService.Load();
+        var settings = settingsService.Load();
 
-        if (!string.IsNullOrWhiteSpace(
-            settings.DefaultTemplatePath))
+        if (!string.IsNullOrWhiteSpace(settings.DefaultTemplatePath))
         {
-            templateFilePath =
-                settings.DefaultTemplatePath;
+            templateFilePath = settings.DefaultTemplatePath;
+            txtTemplatePath.Text = templateFilePath;
         }
 
-        if (!string.IsNullOrWhiteSpace(
-            settings.DefaultOutputFolder))
+        if (!string.IsNullOrWhiteSpace(settings.DefaultOutputFolder))
         {
-            outputFolderPath =
-                settings.DefaultOutputFolder;
+            outputFolderPath = settings.DefaultOutputFolder;
+            txtOutputPath.Text = outputFolderPath;
+        }
+
+        if (settings.OutputMode == "Merged")
+        {
+            rdoMerged.Checked = true;
+        }
+        else
+        {
+            rdoSeparate.Checked = true;
         }
     }
 }
