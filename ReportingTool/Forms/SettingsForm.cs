@@ -1,4 +1,5 @@
-﻿using ReportingTool.Models;
+﻿using ReportingTool.Enums;
+using ReportingTool.Models;
 using ReportingTool.Services;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace ReportingTool.Forms
             txtOutputFolder.Text =
                 settings.DefaultOutputFolder;
 
-            if (settings.OutputMode == "Merged")
+            if (settings.OutputMode == OutputMode.Merged)
             {
                 rdoMerged.Checked = true;
             }
@@ -87,8 +88,8 @@ namespace ReportingTool.Forms
 
                 OutputMode =
                     rdoMerged.Checked
-                        ? "Merged"
-                        : "Separate"
+                        ? OutputMode.Merged
+                        : OutputMode.Separate
             };
 
             _settingsService.Save(settings);

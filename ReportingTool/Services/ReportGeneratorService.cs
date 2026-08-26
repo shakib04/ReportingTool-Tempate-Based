@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿using ReportingTool.Enums;
 using ReportingTool.Models;
+using ReportingTool.Services.ReportOutput;
 
 namespace ReportingTool.Services;
 
@@ -22,7 +20,8 @@ public class ReportGeneratorService
     public int GenerateReports(
         string excelFilePath,
         string templateFilePath,
-        string outputFolderPath)
+        string outputFolderPath,
+        OutputMode outputMode)
     {
         List<ReportData> reports =
             _excelService.ReadExcel(excelFilePath);
@@ -34,25 +33,34 @@ public class ReportGeneratorService
             );
         }
 
-        int generatedCount = 0;
+        IReportOutputStrategy strategy =
+            CreateStrategy(outputMode);
 
-        foreach (ReportData employee in reports)
+        return strategy.Generate(
+            reports,
+            templateFilePath,
+            outputFolderPath
+        );
+    }
+
+    private IReportOutputStrategy CreateStrategy(
+        OutputMode outputMode)
+    {
+        return outputMode switch
         {
-            string fileName =
-                $"Report_{employee.EmployeeId}.docx";
+            OutputMode.Separate =>
+                new SeparateReportGenerator(
+                    _wordService),
 
-            string outputFilePath =
-                Path.Combine(outputFolderPath, fileName);
+            OutputMode.Merged =>
+                new MergedReportGenerator(
+                    _wordService),
 
-            _wordService.GenerateReport(
-                templateFilePath,
-                outputFilePath,
-                employee
-            );
-
-            generatedCount++;
-        }
-
-        return generatedCount;
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(outputMode),
+                outputMode,
+                "Unsupported output mode."
+            )
+        };
     }
 }

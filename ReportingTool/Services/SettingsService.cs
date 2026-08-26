@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Text.Json.Serialization;
 using System.Text.Json;
 using ReportingTool.Models;
 
@@ -11,6 +11,16 @@ public class SettingsService
 {
     private readonly string _settingsFolder;
     private readonly string _settingsFilePath;
+
+    private readonly JsonSerializerOptions _jsonOptions =
+    new()
+    {
+        WriteIndented = true,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
 
     public SettingsService()
     {
@@ -41,8 +51,10 @@ public class SettingsService
             string json =
                 File.ReadAllText(_settingsFilePath);
 
-            return JsonSerializer.Deserialize<AppSettings>(json)
-                   ?? new AppSettings();
+            return JsonSerializer.Deserialize<AppSettings>(
+                    json,
+                    _jsonOptions
+            ) ?? new AppSettings();
         }
         catch
         {
@@ -57,13 +69,8 @@ public class SettingsService
             Directory.CreateDirectory(_settingsFolder);
         }
 
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
-
         string json =
-            JsonSerializer.Serialize(settings, options);
+            JsonSerializer.Serialize(settings, _jsonOptions);
 
         File.WriteAllText(
             _settingsFilePath,

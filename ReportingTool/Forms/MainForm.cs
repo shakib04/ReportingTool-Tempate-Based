@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml.Wordprocessing;
+using ReportingTool.Enums;
 using ReportingTool.Forms;
 using ReportingTool.Services;
 
@@ -84,11 +86,15 @@ public partial class MainForm : Form
                     new WordService()
                 );
 
+            var settingsService = new SettingsService();
+            var settings = settingsService.Load();
+
             int generatedCount =
                 generatorService.GenerateReports(
                     excelFilePath!,
                     templateFilePath!,
-                    outputFolderPath!
+                    outputFolderPath!,
+                    settings.OutputMode
                 );
 
             lblStatus.Text =
@@ -167,7 +173,7 @@ public partial class MainForm : Form
             txtOutputPath.Text = outputFolderPath;
         }
 
-        if (settings.OutputMode == "Merged")
+        if (settings.OutputMode == OutputMode.Merged)
         {
             rdoMerged.Checked = true;
         }
