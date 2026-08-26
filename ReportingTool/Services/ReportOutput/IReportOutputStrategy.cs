@@ -8,8 +8,11 @@ namespace ReportingTool.Services.ReportOutput
     internal interface IReportOutputStrategy
     {
         int Generate(
-        List<ReportData> reports,
+        List<Dictionary<string, string>> reports,
         string templateFilePath,
         string outputFolderPath);
     }
+
+
+
 }

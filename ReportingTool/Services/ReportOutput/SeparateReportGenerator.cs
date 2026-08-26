@@ -1,8 +1,7 @@
-﻿using System;
+﻿using ReportingTool.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
-
-using ReportingTool.Models;
 
 namespace ReportingTool.Services.ReportOutput;
 
@@ -17,7 +16,7 @@ public class SeparateReportGenerator : IReportOutputStrategy
     }
 
     public int Generate(
-        List<ReportData> reports,
+        List<Dictionary<string, string>> reports,
         string templateFilePath,
         string outputFolderPath)
     {
@@ -25,20 +24,20 @@ public class SeparateReportGenerator : IReportOutputStrategy
 
         int generatedCount = 0;
 
-        foreach (ReportData employee in reports)
+        foreach (var report in reports)
         {
             string fileName =
-                $"Report_{employee.EmployeeId}.docx";
+                 $"Report_{generatedCount + 1}.docx";
 
             string outputFilePath = Path.Combine(
-                outputFolderPath,
-                fileName
-            );
+                    outputFolderPath,
+                    fileName
+                );
 
             _wordService.GenerateReport(
                 templateFilePath,
                 outputFilePath,
-                employee
+                report
             );
 
             generatedCount++;

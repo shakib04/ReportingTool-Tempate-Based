@@ -17,7 +17,7 @@ public class MergedReportGenerator : IReportOutputStrategy
     }
 
     public int Generate(
-        List<ReportData> reports,
+        List<Dictionary<string, string>> reports,
         string templateFilePath,
         string outputFolderPath)
     {
@@ -32,7 +32,7 @@ public class MergedReportGenerator : IReportOutputStrategy
             templateFilePath,
             outputFilePath,
             reports
-        ); 
+        );
 
         return reports.Count;
     }

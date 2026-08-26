@@ -23,7 +23,7 @@ public class ReportGeneratorService
         string outputFolderPath,
         OutputMode outputMode)
     {
-        List<ReportData> reports =
+        List<Dictionary<string, string>> reports =
             _excelService.ReadExcel(excelFilePath);
 
         if (reports.Count == 0)

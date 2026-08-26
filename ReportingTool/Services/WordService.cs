@@ -10,39 +10,66 @@ public class WordService
     public void GenerateReport(
         string templatePath,
         string outputPath,
-        ReportData data)
+        Dictionary<string, string> data)
     {
-        File.Copy(templatePath, outputPath, true);
+        File.Copy(
+            templatePath,
+            outputPath,
+            true
+        );
 
         using var document =
-            WordprocessingDocument.Open(outputPath, true);
+            WordprocessingDocument.Open(
+                outputPath,
+                true
+            );
 
-        var body = document.MainDocumentPart!.Document.Body!;
+        var body =
+            document.MainDocumentPart!
+                .Document
+                .Body!;
 
-        ReplaceText(body, "{{Name}}", data.Name);
+        foreach (var item in data)
+        {
+            string placeholder =
+                $"{{{{{item.Key}}}}}";
 
-        ReplaceText(
-            body,
-            "{{Designation}}",
-            data.Designation);
+            ReplaceText(
+                body,
+                placeholder,
+                item.Value
+            );
+        }
 
-        ReplaceText(
-            body,
-            "{{EmployeeId}}",
-            data.EmployeeId);
+        document.MainDocumentPart!
+            .Document
+            .Save();
+    }
 
-        ReplaceText(
-            body,
-            "{{RetirementDate}}",
-            data.RetirementDate);
-
-        document.MainDocumentPart.Document.Save();
+    private void ReplaceText(
+        OpenXmlElement element,
+        string placeholder,
+        string value)
+    {
+        foreach (
+            var text
+            in element.Descendants<Text>())
+        {
+            if (text.Text.Contains(placeholder))
+            {
+                text.Text =
+                    text.Text.Replace(
+                        placeholder,
+                        value ?? ""
+                    );
+            }
+        }
     }
 
     public void GenerateMergedReport(
         string templatePath,
         string outputPath,
-        List<ReportData> reports)
+        List<Dictionary<string, string>> reports)
     {
         if (reports.Count == 0)
         {
@@ -142,20 +169,5 @@ public class WordService
             .MainDocumentPart!
             .Document
             .Save();
-    }
-
-    private void ReplaceText(
-        OpenXmlElement element,
-        string placeholder,
-        string value)
-    {
-        foreach (var text in element.Descendants<Text>())
-        {
-            if (text.Text.Contains(placeholder))
-            {
-                text.Text =
-                    text.Text.Replace(placeholder, value);
-            }
-        }
     }
 }
