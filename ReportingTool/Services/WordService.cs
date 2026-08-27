@@ -44,33 +44,70 @@ public class WordService
     }
 
     private void ReplacePlaceholders(
-        OpenXmlElement element,
+    OpenXmlElement element,
+    Dictionary<string, string> data)
+    {
+        foreach (var paragraph in element.Descendants<Paragraph>())
+        {
+            ReplaceInParagraph(
+                paragraph,
+                data
+            );
+        }
+    }
+
+    private void ReplaceInParagraph(
+        Paragraph paragraph,
         Dictionary<string, string> data)
     {
-        foreach (var text in element.Descendants<Text>())
+        var textElements =
+            paragraph
+                .Descendants<Text>()
+                .ToList();
+
+        if (textElements.Count == 0)
         {
-            if (string.IsNullOrEmpty(text.Text))
-            {
-                continue;
-            }
+            return;
+        }
 
-            text.Text =
-                PlaceholderRegex.Replace(
-                    text.Text,
-                    match =>
-                    {
-                        string key =
-                            match.Groups[1]
-                                .Value
-                                .Trim();
+        string fullText =
+            string.Concat(
+                textElements.Select(x => x.Text)
+            );
 
-                        return data.TryGetValue(
-                            key,
-                            out var value)
-                            ? value ?? ""
-                            : match.Value;
-                    }
-                );
+        if (!PlaceholderRegex.IsMatch(fullText))
+        {
+            return;
+        }
+
+        string replacedText =
+            PlaceholderRegex.Replace(
+                fullText,
+                match =>
+                {
+                    string key =
+                        match.Groups[1]
+                            .Value
+                            .Trim();
+
+                    return data.TryGetValue(
+                        key,
+                        out var value)
+                        ? value ?? ""
+                        : match.Value;
+                }
+            );
+
+        // প্রথম Text node-এ পুরো replaced text রাখুন
+        textElements[0].Text =
+            replacedText;
+
+        // বাকি Text node empty করে দিন
+        for (int i = 1;
+             i < textElements.Count;
+             i++)
+        {
+            textElements[i].Text = "";
         }
     }
 
