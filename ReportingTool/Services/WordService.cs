@@ -2,11 +2,18 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using ReportingTool.Models;
+using System.Text.RegularExpressions;
 
 namespace ReportingTool.Services;
 
 public class WordService
 {
+    private static readonly Regex PlaceholderRegex =
+        new(
+            @"\{\{([^{}]+)\}\}",
+            RegexOptions.Compiled
+        );
+
     public void GenerateReport(
         string templatePath,
         string outputPath,
@@ -24,45 +31,46 @@ public class WordService
                 true
             );
 
-        var body =
+        ReplacePlaceholders(
             document.MainDocumentPart!
                 .Document
-                .Body!;
-
-        foreach (var item in data)
-        {
-            string placeholder =
-                $"{{{{{item.Key}}}}}";
-
-            ReplaceText(
-                body,
-                placeholder,
-                item.Value
-            );
-        }
+                .Body!,
+            data
+        );
 
         document.MainDocumentPart!
             .Document
             .Save();
     }
 
-    private void ReplaceText(
+    private void ReplacePlaceholders(
         OpenXmlElement element,
-        string placeholder,
-        string value)
+        Dictionary<string, string> data)
     {
-        foreach (
-            var text
-            in element.Descendants<Text>())
+        foreach (var text in element.Descendants<Text>())
         {
-            if (text.Text.Contains(placeholder))
+            if (string.IsNullOrEmpty(text.Text))
             {
-                text.Text =
-                    text.Text.Replace(
-                        placeholder,
-                        value ?? ""
-                    );
+                continue;
             }
+
+            text.Text =
+                PlaceholderRegex.Replace(
+                    text.Text,
+                    match =>
+                    {
+                        string key =
+                            match.Groups[1]
+                                .Value
+                                .Trim();
+
+                        return data.TryGetValue(
+                            key,
+                            out var value)
+                            ? value ?? ""
+                            : match.Value;
+                    }
+                );
         }
     }
 
