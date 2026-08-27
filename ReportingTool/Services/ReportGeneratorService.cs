@@ -1,5 +1,6 @@
 ﻿using ReportingTool.Enums;
 using ReportingTool.Models;
+using ReportingTool.Services.FileHandling;
 using ReportingTool.Services.ReportOutput;
 
 namespace ReportingTool.Services;
@@ -23,24 +24,47 @@ public class ReportGeneratorService
         string outputFolderPath,
         OutputMode outputMode)
     {
-        List<Dictionary<string, string>> reports =
-            _excelService.ReadExcel(excelFilePath);
+        var workingFiles =
+            new WorkingFileService();
 
-        if (reports.Count == 0)
+        try
         {
-            throw new InvalidOperationException(
-                "No data found in Excel."
+            // Original files untouched থাকবে
+            string workingExcelPath =
+                workingFiles.CreateWorkingCopy(
+                    excelFilePath
+                );
+
+            string workingTemplatePath =
+                workingFiles.CreateWorkingCopy(
+                    templateFilePath
+                );
+
+            List<Dictionary<string, string>> reports =
+                _excelService.ReadExcel(
+                    workingExcelPath
+                );
+
+            if (reports.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "No data found in Excel."
+                );
+            }
+
+            IReportOutputStrategy strategy =
+                CreateStrategy(outputMode);
+
+            return strategy.Generate(
+                reports,
+                workingTemplatePath,
+                outputFolderPath
             );
         }
-
-        IReportOutputStrategy strategy =
-            CreateStrategy(outputMode);
-
-        return strategy.Generate(
-            reports,
-            templateFilePath,
-            outputFolderPath
-        );
+        finally
+        {
+            workingFiles.Cleanup();
+        }
     }
 
     private IReportOutputStrategy CreateStrategy(
