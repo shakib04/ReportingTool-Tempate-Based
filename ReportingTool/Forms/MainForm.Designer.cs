@@ -97,7 +97,7 @@
             // 
             // btnSettings
             // 
-            btnSettings.Location = new Point(454, 12);
+            btnSettings.Location = new Point(0, 2);
             btnSettings.Name = "btnSettings";
             btnSettings.Size = new Size(74, 26);
             btnSettings.TabIndex = 5;

@@ -54,12 +54,12 @@
             // 
             txtTemplatePath.Location = new Point(82, 60);
             txtTemplatePath.Name = "txtTemplatePath";
-            txtTemplatePath.Size = new Size(100, 23);
+            txtTemplatePath.Size = new Size(512, 23);
             txtTemplatePath.TabIndex = 1;
             // 
             // btnBrowseTemplate
             // 
-            btnBrowseTemplate.Location = new Point(222, 60);
+            btnBrowseTemplate.Location = new Point(600, 60);
             btnBrowseTemplate.Name = "btnBrowseTemplate";
             btnBrowseTemplate.Size = new Size(75, 23);
             btnBrowseTemplate.TabIndex = 2;
@@ -80,12 +80,12 @@
             // 
             txtOutputFolder.Location = new Point(82, 153);
             txtOutputFolder.Name = "txtOutputFolder";
-            txtOutputFolder.Size = new Size(100, 23);
+            txtOutputFolder.Size = new Size(512, 23);
             txtOutputFolder.TabIndex = 4;
             // 
             // btnBrowseOutput
             // 
-            btnBrowseOutput.Location = new Point(222, 153);
+            btnBrowseOutput.Location = new Point(600, 153);
             btnBrowseOutput.Name = "btnBrowseOutput";
             btnBrowseOutput.Size = new Size(75, 23);
             btnBrowseOutput.TabIndex = 5;
